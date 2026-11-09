@@ -22,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="styles.css?v=3.1">
+    <link rel="stylesheet" href="styles.css?v=3.2">
 </head>
 <body>
     <div class="app-container">
@@ -460,6 +460,32 @@
                         </div>
                     </div>
                 </section>
+
+                <hr class="settings-divider">
+
+                <!-- Sección 5: Base de Datos y Respaldos -->
+                <section class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="section-icon">💾</span>
+                        <div>
+                            <h3>Copia de Seguridad y Migración</h3>
+                            <p>Descarga tus datos locales o sube tu archivo finanzas.db a la nube</p>
+                        </div>
+                    </div>
+                    <div class="db-actions-row">
+                        <button type="button" id="btn-export-db" class="btn-secondary btn-db-action">
+                            <svg viewBox="0 0 24 24" fill="none" width="16" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            Exportar Base de Datos (.db)
+                        </button>
+
+                        <label class="btn-primary btn-db-action" style="cursor: pointer; margin: 0;">
+                            <svg viewBox="0 0 24 24" fill="none" width="16" height="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            <span id="lbl-import-db">Importar / Restaurar .db</span>
+                            <input type="file" id="input-import-db" accept=".db" style="display: none;">
+                        </label>
+                    </div>
+                    <div id="msg-database" class="settings-msg" style="display: none;"></div>
+                </section>
             </div>
         </div>
     </div>
@@ -476,6 +502,6 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- JS -->
-    <script src="script.js?v=3.3"></script>
+    <script src="script.js?v=3.4"></script>
 </body>
 </html>

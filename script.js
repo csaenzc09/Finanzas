@@ -92,7 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsBtnTogglePush: document.getElementById('settings-btn-toggle-push'),
         settingsBtnTestPush: document.getElementById('settings-btn-test-push'),
         settingsNotifyLabel: document.getElementById('settings-notify-label'),
-        settingsNotifyDesc: document.getElementById('settings-notify-desc')
+        settingsNotifyDesc: document.getElementById('settings-notify-desc'),
+        btnExportDb: document.getElementById('btn-export-db'),
+        inputImportDb: document.getElementById('input-import-db'),
+        lblImportDb: document.getElementById('lbl-import-db'),
+        msgDatabase: document.getElementById('msg-database')
     };
 
     setupEventListeners();
@@ -463,6 +467,14 @@ function setupEventListeners() {
     }
     if (UI.formChangeCedula) {
         UI.formChangeCedula.addEventListener('submit', handleChangeCedula);
+    }
+
+    // Exportar e Importar base de datos
+    if (UI.btnExportDb) {
+        UI.btnExportDb.addEventListener('click', handleExportDatabase);
+    }
+    if (UI.inputImportDb) {
+        UI.inputImportDb.addEventListener('change', handleImportDatabase);
     }
     if (UI.settingsBtnTogglePush) {
         UI.settingsBtnTogglePush.addEventListener('click', handleNotificationToggle);
@@ -1027,6 +1039,71 @@ async function handleChangeCedula(e) {
     } finally {
         btn.disabled = false;
         btn.textContent = 'Guardar Cédula';
+    }
+}
+
+// --- GESTIÓN DE EXPORTAR E IMPORTAR BASE DE DATOS (SQLITE) ---
+function handleExportDatabase() {
+    // Abre la descarga directa del archivo finanzas.db del servidor
+    window.location.href = '/api/database/export';
+}
+
+async function handleImportDatabase(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.db')) {
+        alert('Por favor selecciona un archivo con extensión .db');
+        e.target.value = '';
+        return;
+    }
+
+    if (!confirm(`¿Estás seguro de restaurar "${file.name}"? Se reemplazarán los datos actuales con los del archivo subido.`)) {
+        e.target.value = '';
+        return;
+    }
+
+    if (UI.msgDatabase) {
+        UI.msgDatabase.textContent = 'Subiendo y restaurando base de datos...';
+        UI.msgDatabase.className = 'settings-msg';
+        UI.msgDatabase.style.display = 'block';
+    }
+    if (UI.lblImportDb) UI.lblImportDb.textContent = 'Procesando...';
+
+    const formData = new FormData();
+    formData.append('database', file);
+
+    try {
+        const response = await fetch('/api/database/import', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Error al restaurar');
+        }
+
+        if (UI.msgDatabase) {
+            UI.msgDatabase.textContent = '✅ ' + (data.message || 'Restaurada con éxito. Recargando...');
+            UI.msgDatabase.className = 'settings-msg success';
+            UI.msgDatabase.style.display = 'block';
+        }
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 1800);
+    } catch (err) {
+        if (UI.msgDatabase) {
+            UI.msgDatabase.textContent = '❌ ' + (err.message || 'Error al restaurar la base de datos');
+            UI.msgDatabase.className = 'settings-msg error';
+            UI.msgDatabase.style.display = 'block';
+        }
+    } finally {
+        if (UI.lblImportDb) UI.lblImportDb.textContent = 'Importar / Restaurar .db';
+        e.target.value = '';
     }
 }
 

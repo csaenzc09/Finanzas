@@ -1,10 +1,10 @@
 // Service Worker para PWA y Notificaciones Push (iOS / Android / Desktop)
-const CACHE_NAME = 'finanzas-pwa-v6';
+const CACHE_NAME = 'finanzas-pwa-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/styles.css?v=3.1',
-  '/script.js?v=3.3',
+  '/styles.css?v=3.2',
+  '/script.js?v=3.4',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

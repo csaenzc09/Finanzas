@@ -8,6 +8,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -603,6 +605,75 @@ app.post('/api/metadata/month', authenticateToken, (req, res) => {
   } catch (error) {
     console.error('Error updating month:', error);
     res.status(500).json({ error: 'Error al actualizar mes' });
+  }
+});
+
+// --- EXPORTAR E IMPORTAR BASE DE DATOS (BACKUP & RESTORE) ---
+
+// Descargar archivo finanzas.db actual
+app.get('/api/database/export', authenticateToken, (req, res) => {
+  try {
+    if (!fs.existsSync(dbPath)) {
+      return res.status(404).json({ error: 'No se encontró la base de datos' });
+    }
+    const filename = `finanzas-backup-${new Date().toISOString().slice(0, 10)}.db`;
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Type', 'application/x-sqlite3');
+    res.download(dbPath, filename);
+  } catch (err) {
+    console.error('Error exporting database:', err);
+    res.status(500).json({ error: 'Error al exportar la base de datos' });
+  }
+});
+
+// Configuración de multer para subir finanzas.db (máximo 50MB)
+const upload = multer({
+  dest: path.join(__dirname, 'backups'),
+  limits: { fileSize: 50 * 1024 * 1024 }
+});
+
+// Importar archivo finanzas.db y restaurarlo
+app.post('/api/database/import', authenticateToken, upload.single('database'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Por favor selecciona un archivo .db para restaurar.' });
+    }
+
+    const uploadedPath = req.file.path;
+
+    // Validar que el archivo subido sea un SQLite válido
+    try {
+      const testDb = new Database(uploadedPath, { readonly: true });
+      const tables = testDb.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+      testDb.close();
+
+      const tableNames = tables.map(t => t.name);
+      if (!tableNames.includes('users') && !tableNames.includes('debts')) {
+        fs.unlinkSync(uploadedPath);
+        return res.status(400).json({ error: 'El archivo no parece ser una base de datos válida de Finanzas.' });
+      }
+    } catch (testErr) {
+      if (fs.existsSync(uploadedPath)) fs.unlinkSync(uploadedPath);
+      return res.status(400).json({ error: 'El archivo subido no es una base de datos SQLite válida.' });
+    }
+
+    // Copiar el archivo validado a la ruta activa dbPath
+    fs.copyFileSync(uploadedPath, dbPath);
+    fs.unlinkSync(uploadedPath);
+
+    // Si existen archivos auxiliares wal/shm antiguos, limpiarlos para que SQLite recargue en limpio
+    const walPath = `${dbPath}-wal`;
+    const shmPath = `${dbPath}-shm`;
+    if (fs.existsSync(walPath)) try { fs.unlinkSync(walPath); } catch (e) {}
+    if (fs.existsSync(shmPath)) try { fs.unlinkSync(shmPath); } catch (e) {}
+
+    res.json({
+      success: true,
+      message: 'Base de datos restaurada correctamente. La página se recargará.'
+    });
+  } catch (err) {
+    console.error('Error importing database:', err);
+    res.status(500).json({ error: 'Error al restaurar la base de datos: ' + err.message });
   }
 });
 
