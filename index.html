@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gestor de Deudas | Finanzas</title>
+    
+    <!-- PWA & iOS Safari Config -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finanzas">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+    <meta name="theme-color" content="#4F46E5">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css?v=3.1">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Creador -->
+        <aside class="sidebar">
+            <header>
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <h1>Finanzas</h1>
+                </div>
+                <div class="current-month">
+                    <span id="month-display" class="badge-month">Cargando mes...</span>
+                </div>
+            </header>
+
+            <!-- Barra de Usuario / Sesión -->
+            <div class="user-session-bar" id="user-session-bar">
+                <div class="user-info-chip">
+                    <div class="user-avatar" id="user-avatar">👤</div>
+                    <div class="user-details">
+                        <span class="user-name" id="user-name">Usuario</span>
+                        <span class="user-tag">Cuenta activa</span>
+                    </div>
+                </div>
+                <div class="user-session-actions">
+                    <button id="btn-open-settings" class="btn-user-action" title="Configuración de la cuenta">
+                        <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button id="btn-logout" class="btn-user-action btn-logout" title="Cerrar Sesión">
+                        <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <section class="add-debt-section" id="add-debt-section">
+                <div class="add-debt-sheet-handle" aria-hidden="true"></div>
+                <button type="button" class="add-debt-toggle" id="add-debt-toggle" aria-expanded="false" aria-controls="debt-form">
+                    <span class="add-debt-toggle-label">
+                        <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Agregar Nueva Deuda
+                    </span>
+                    <svg class="add-debt-chevron" viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="add-debt-sheet-head">
+                    <h2 class="add-debt-title">Nueva Deuda</h2>
+                    <button type="button" class="add-debt-sheet-close" id="add-debt-sheet-close" aria-label="Cerrar formulario">✕</button>
+                </div>
+                <div class="add-debt-form-wrapper" id="add-debt-form-wrapper">
+                <form id="debt-form">
+                    <div class="input-group">
+                        <label for="description">Descripción</label>
+                        <input type="text" id="description" placeholder="Ej. Tarjeta de crédito" required autocomplete="off">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="amount">Monto</label>
+                        <div class="amount-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input type="text" id="amount" placeholder="0" inputmode="numeric" autocomplete="off" required>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group half">
+                            <label for="payment-date">Fecha de pago</label>
+                            <input type="date" id="payment-date">
+                        </div>
+                        
+                        <div class="input-group half">
+                            <label for="debt-type">Tipo</label>
+                            <div class="select-wrapper">
+                                <select id="debt-type" required>
+                                    <option value="unica">Única</option>
+                                    <option value="mensual">Mensual (Se repite)</option>
+                                    <option value="quincenal">Quincenal</option>
+                                    <option value="anual">Anual</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="debt-category">Categoría</label>
+                        <div class="select-wrapper">
+                            <select id="debt-category" required>
+                                <option value="Hogar">🏠 Hogar</option>
+                                <option value="Servicios">⚡ Servicios</option>
+                                <option value="Personal">🛒 Personal</option>
+                                <option value="Vehículo">🚗 Vehículo</option>
+                                <option value="Créditos">💳 Créditos</option>
+                                <option value="Otros">📦 Otros</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Agregar Deuda
+                    </button>
+                </form>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Main Content / Lista -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="summary-wrapper">
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <span class="summary-label" id="summary-period-label">Total Pendiente</span>
+                            <div class="month-selector-wrapper">
+                                <select id="month-filter-select" aria-label="Filtrar por mes">
+                                    <option value="current">Este Mes</option>
+                                    <option value="all">Todo el Historial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h2 class="summary-amount" id="total-amount">$0</h2>
+                        <div class="summary-submetrics">
+                            <span class="submetric submetric-paid" id="metric-paid-amount">Pagado: $0</span>
+                            <span class="submetric-separator">•</span>
+                            <span class="submetric submetric-total" id="metric-total-amount">Total: $0</span>
+                        </div>
+                    </div>
+                    <div class="alerts-summary-badges">
+                        <div class="alert-pill pill-overdue" id="badge-overdue" style="display: none;">
+                            <span class="pill-dot"></span>
+                            <span id="count-overdue">0 Vencidas</span>
+                        </div>
+                        <div class="alert-pill pill-urgent" id="badge-urgent" style="display: none;">
+                            <span class="pill-dot"></span>
+                            <span id="count-urgent">0 Por vencer (≤3d)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="list-controls">
+                        <div class="search-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <input type="search" id="search-input" placeholder="Buscar deuda..." autocomplete="off" aria-label="Buscar deuda">
+                        </div>
+                        <div class="select-wrapper sort-wrapper">
+                            <select id="sort-select" aria-label="Ordenar deudas">
+                                <option value="recent">Más recientes</option>
+                                <option value="due-asc">Vence pronto</option>
+                                <option value="due-desc">Vence después</option>
+                                <option value="balance-desc">Mayor saldo</option>
+                                <option value="balance-asc">Menor saldo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filters">
+                        <button class="filter-btn active" data-filter="all">Todas</button>
+                        <button class="filter-btn" data-filter="pending">Pendientes</button>
+                        <button class="filter-btn" data-filter="urgent">⏳ Por vencer</button>
+                        <button class="filter-btn" data-filter="overdue">🚨 Vencidas</button>
+                        <button class="filter-btn" data-filter="recurrentes">🔁 Recurrentes</button>
+                        <button class="filter-btn" data-filter="paid">Pagadas</button>
+                    </div>
+
+                    <div class="notification-controls">
+                        <button id="btn-toggle-notifications" class="btn-notify" title="Activar notificaciones en el móvil">
+                            <svg viewBox="0 0 24 24" fill="none" class="icon"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span id="notify-btn-text">Activar Alertas</span>
+                        </button>
+                        <button id="btn-test-push" class="btn-notify-test" title="Probar notificación en este móvil" style="display: none;">
+                            Probar
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Banner educativo para instalación en iPhone / iPad (iOS Safari) -->
+            <div id="ios-install-banner" class="ios-install-banner" style="display: none;">
+                <div class="banner-content">
+                    <span class="banner-icon">📲</span>
+                    <div>
+                        <strong>Instala Finanzas en tu iPhone:</strong>
+                        <p>Pulsa el botón <strong>Compartir</strong> <svg viewBox="0 0 24 24" fill="none" class="share-icon"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> y elige <strong>"Agregar al inicio"</strong> para recibir notificaciones como app nativa.</p>
+                    </div>
+                </div>
+                <button class="banner-close" onclick="document.getElementById('ios-install-banner').style.display='none'">✕</button>
+            </div>
+
+            <section class="debts-container">
+                <div class="debts-list" id="debts-list">
+                    <!-- Cards de deudas renderizadas por JS -->
+                </div>
+                
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    <p>No hay deudas para mostrar.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Vista Previa -->
+    <div id="preview-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal">&times;</button>
+            <div class="modal-header">
+                <h2 style="font-weight: 800; color: var(--text-primary); font-size: 1.4rem;">Resumen de Deuda</h2>
+            </div>
+            <div class="modal-body" id="modal-details">
+                <!-- Se inyecta dinámicamente vía JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Autenticación (Login / Registro) -->
+    <div id="auth-modal" class="auth-modal-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <h2 id="auth-title">Iniciar Sesión</h2>
+                <p id="auth-subtitle">Ingresa a tu cuenta para gestionar tus finanzas</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Ingresar</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Registrarse</button>
+            </div>
+
+            <form id="auth-form" class="auth-form">
+                <div class="input-group" id="auth-username-group">
+                    <label for="auth-username">Nombre de Usuario</label>
+                    <input type="text" id="auth-username" placeholder="ej. cristian" required autocomplete="username" autofocus>
+                </div>
+
+                <div class="input-group" id="auth-cedula-group" style="display: none;">
+                    <label for="auth-cedula">Cédula</label>
+                    <input type="text" id="auth-cedula" placeholder="Ej. 12345678" inputmode="numeric" autocomplete="off">
+                </div>
+
+                <div class="input-group" id="auth-password-group">
+                    <label for="auth-password">Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-password" data-target="auth-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group" id="auth-confirm-reg-group" style="display: none;">
+                    <label for="auth-confirm-reg-password">Verificar Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="auth-confirm-reg-password" placeholder="Repite tu contraseña" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-password" data-target="auth-confirm-reg-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="auth-recover-fields" style="display: none;">
+                    <div class="input-group">
+                        <label for="auth-new-password">Nueva Contraseña</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="auth-new-password" placeholder="Mínimo 3 caracteres" autocomplete="new-password">
+                            <button type="button" class="btn-toggle-password" data-target="auth-new-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 0.85rem;">
+                        <label for="auth-confirm-password">Confirmar Contraseña</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="auth-confirm-password" placeholder="Repite la contraseña" autocomplete="new-password">
+                            <button type="button" class="btn-toggle-password" data-target="auth-confirm-password" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="auth-error" class="auth-error" style="display: none;"></div>
+
+                <button type="submit" class="btn-primary" id="btn-auth-submit" style="width: 100%; margin-top: 1rem;">
+                    Iniciar Sesión
+                </button>
+
+                <button type="button" id="auth-forgot-link" class="auth-link">
+                    ¿Olvidaste tu contraseña? Restablécala con tu cédula
+                </button>
+                <button type="button" id="auth-back-link" class="auth-link" style="display: none;">
+                    ← Volver a iniciar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Cuenta -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content settings-modal-content">
+            <button class="modal-close" id="close-settings-modal">&times;</button>
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <div class="settings-header-icon">⚙️</div>
+                    <div>
+                        <h2 style="font-weight: 800; color: var(--text-primary); font-size: 1.35rem; margin: 0;">Configuración de Cuenta</h2>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Administra tu perfil, seguridad y notificaciones</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body settings-body">
+                <!-- Sección 1: Cambiar Nombre de Usuario -->
+                <section class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="section-icon">👤</span>
+                        <div>
+                            <h3>Nombre de Usuario</h3>
+                            <p>Actualiza cómo te identificas en la plataforma</p>
+                        </div>
+                    </div>
+                    <form id="form-change-username" class="settings-form">
+                        <div class="input-group">
+                            <label for="settings-new-username">Nuevo Usuario</label>
+                            <input type="text" id="settings-new-username" placeholder="Nuevo nombre de usuario" required autocomplete="username">
+                        </div>
+                        <button type="submit" class="btn-primary btn-settings-save">
+                            Actualizar Usuario
+                        </button>
+                    </form>
+                    <div id="msg-username" class="settings-msg" style="display: none;"></div>
+                </section>
+
+                <hr class="settings-divider">
+
+                <!-- Sección 2: Cédula para Recuperación -->
+                <section class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="section-icon">🪪</span>
+                        <div>
+                            <h3>Cédula para Recuperación</h3>
+                            <p>Restablece tu contraseña ingresando únicamente tu cédula</p>
+                        </div>
+                    </div>
+                    <form id="form-change-cedula" class="settings-form">
+                        <div class="input-group">
+                            <label for="settings-cedula">Cédula</label>
+                            <input type="text" id="settings-cedula" placeholder="Ej. 12345678" inputmode="numeric" autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn-primary btn-settings-save">
+                            Guardar Cédula
+                        </button>
+                    </form>
+                    <div id="msg-cedula" class="settings-msg" style="display: none;"></div>
+                </section>
+
+                <hr class="settings-divider">
+
+                <!-- Sección 3: Cambiar Contraseña -->
+                <section class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="section-icon">🔒</span>
+                        <div>
+                            <h3>Cambiar Contraseña</h3>
+                            <p>Mantén tu cuenta protegida</p>
+                        </div>
+                    </div>
+                    <form id="form-change-password" class="settings-form">
+                        <div class="input-group">
+                            <label for="settings-current-pass">Contraseña Actual</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="settings-current-pass" placeholder="••••••••" required autocomplete="current-password">
+                                <button type="button" class="btn-toggle-password" data-target="settings-current-pass" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="settings-new-pass">Nueva Contraseña</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="settings-new-pass" placeholder="Mínimo 3 caracteres" required autocomplete="new-password">
+                                <button type="button" class="btn-toggle-password" data-target="settings-new-pass" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary btn-settings-save">
+                            Cambiar Contraseña
+                        </button>
+                    </form>
+                    <div id="msg-password" class="settings-msg" style="display: none;"></div>
+                </section>
+
+                <hr class="settings-divider">
+
+                <!-- Sección 4: Notificaciones en Celular (iPhone / Android) -->
+                <section class="settings-section">
+                    <div class="settings-section-title">
+                        <span class="section-icon">🔔</span>
+                        <div>
+                            <h3>Notificaciones en el Móvil</h3>
+                            <p>Alertas automáticas de deudas por vencer o vencidas</p>
+                        </div>
+                    </div>
+                    <div class="settings-notify-row">
+                        <div class="notify-status-text">
+                            <strong id="settings-notify-label">Estado: Desactivadas</strong>
+                            <span id="settings-notify-desc">Activa el servicio para recibir avisos en la pantalla de bloqueo.</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button id="settings-btn-toggle-push" class="btn-notify">
+                                Activar Notificaciones
+                            </button>
+                            <button id="settings-btn-test-push" class="btn-notify-test" style="display: none;">
+                                Enviar Prueba
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante para agregar deuda (mobile) -->
+    <button type="button" class="add-debt-fab" id="add-debt-fab" aria-label="Agregar nueva deuda">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <!-- Fondo del panel de nueva deuda (mobile) -->
+    <div id="add-debt-overlay" class="add-debt-overlay"></div>
+
+    <!-- Notificaciones de acción (deshacer) -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JS -->
+    <script src="script.js?v=3.3"></script>
+</body>
+</html>
