@@ -24,8 +24,9 @@ webpush.setVapidDetails(
   VAPID_PRIVATE_KEY
 );
 
-// Base de datos SQLite persistente en archivo
-const dbPath = path.join(__dirname, 'finanzas.db');
+// Base de datos SQLite persistente en archivo (compatible con Railway Volume montado en /data o local)
+const dataDir = process.env.DATA_DIR || __dirname;
+const dbPath = path.join(dataDir, 'finanzas.db');
 const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 
