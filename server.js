@@ -48,8 +48,11 @@ try {
 
 // Base de datos SQLite persistente en archivo (compatible con Railway Volume montado en /data o local)
 const dataDir = process.env.DATA_DIR || __dirname;
+if (!fs.existsSync(dataDir)) {
+  try { fs.mkdirSync(dataDir, { recursive: true }); } catch (e) {}
+}
 const dbPath = path.join(dataDir, 'finanzas.db');
-const db = new Database(dbPath);
+let db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 
 // Crear tablas si no existen
@@ -677,6 +680,13 @@ app.post('/api/database/import', authenticateToken, upload.single('database'), (
       return res.status(400).json({ error: 'El archivo subido no es una base de datos SQLite válida.' });
     }
 
+    // Cerrar la conexión actual de SQLite para liberar el archivo antes de reemplazarlo
+    try {
+      db.close();
+    } catch (closeErr) {
+      console.warn('Advertencia al cerrar db previa:', closeErr);
+    }
+
     // Copiar el archivo validado a la ruta activa dbPath
     fs.copyFileSync(uploadedPath, dbPath);
     fs.unlinkSync(uploadedPath);
@@ -686,6 +696,10 @@ app.post('/api/database/import', authenticateToken, upload.single('database'), (
     const shmPath = `${dbPath}-shm`;
     if (fs.existsSync(walPath)) try { fs.unlinkSync(walPath); } catch (e) {}
     if (fs.existsSync(shmPath)) try { fs.unlinkSync(shmPath); } catch (e) {}
+
+    // Reabrir la base de datos con los nuevos datos cargados
+    db = new Database(dbPath);
+    db.pragma('journal_mode = WAL');
 
     res.json({
       success: true,
