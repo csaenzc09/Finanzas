@@ -17,14 +17,34 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 const JWT_SECRET = process.env.JWT_SECRET || 'finanzas-super-secret-key-2026';
 
 // Configuración VAPID para Web Push Notifications
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BNNZQG0fCeuKeo9BFZqILY4TqcNAmom1-cpcqy-Nt-jmfQP-r90WzKhKYilc3bytZDPIY0pXXqefkATOtgmsC7o';
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || 'FPDp4xowra2dhuSMOugFXKcKSy3S8pPJS6v2kK1F3PA';
+let VAPID_PUBLIC_KEY = (process.env.VAPID_PUBLIC_KEY || '').trim() || 'BNNZQG0fCeuKeo9BFZqILY4TqcNAmom1-cpcqy-Nt-jmfQP-r90WzKhKYilc3bytZDPIY0pXXqefkATOtgmsC7o';
+let VAPID_PRIVATE_KEY = (process.env.VAPID_PRIVATE_KEY || '').trim() || 'FPDp4xowra2dhuSMOugFXKcKSy3S8pPJS6v2kK1F3PA';
 
-webpush.setVapidDetails(
-  'mailto:contacto@finanzas.local',
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
+// Limpiar comillas accidentales de las variables de entorno
+VAPID_PUBLIC_KEY = VAPID_PUBLIC_KEY.replace(/^["']|["']$/g, '');
+VAPID_PRIVATE_KEY = VAPID_PRIVATE_KEY.replace(/^["']|["']$/g, '');
+
+try {
+  webpush.setVapidDetails(
+    'mailto:contacto@finanzas.local',
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY
+  );
+} catch (vapidErr) {
+  console.warn('⚠️ Error configurando VAPID desde env, usando claves fallback automáticas:', vapidErr.message);
+  // Fallback seguro si en Railway se pegó con espacios o formato inválido
+  const safeKeys = {
+    publicKey: 'BLJ7z-vrFVbKULHSsHihsIaW34f7sXABikUb4F3XHMmzIh8rOX13ZIsoE6oWcE6ypBn9Wjzd6Slg1GuJrrRni98',
+    privateKey: 'UOLN_wFvWacLjEHTe3_C_6QLlcYb-2kmgK3fb4Ipu1A'
+  };
+  VAPID_PUBLIC_KEY = safeKeys.publicKey;
+  VAPID_PRIVATE_KEY = safeKeys.privateKey;
+  webpush.setVapidDetails(
+    'mailto:contacto@finanzas.local',
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY
+  );
+}
 
 // Base de datos SQLite persistente en archivo (compatible con Railway Volume montado en /data o local)
 const dataDir = process.env.DATA_DIR || __dirname;
