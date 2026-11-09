@@ -816,7 +816,7 @@ select {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 1.5rem;
+    gap: 1.25rem 2rem;
     flex-wrap: wrap;
     width: 100%;
 }
@@ -824,8 +824,10 @@ select {
 .header-top-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .header-filters-row {
@@ -858,6 +860,13 @@ select {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
+}
+
+.amount-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
 }
 
 .summary-card-header {
@@ -961,11 +970,14 @@ select {
 .btn-notify {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
-    padding: 0.5rem 1rem;
+    height: 42px;
+    padding: 0 1rem;
     border-radius: 9999px;
     font-size: 0.8rem;
     font-weight: 700;
+    white-space: nowrap;
     cursor: pointer;
     background: rgba(99, 102, 241, 0.1);
     color: var(--accent-primary);
@@ -991,10 +1003,15 @@ select {
 }
 
 .btn-notify-test {
-    padding: 0.5rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 0.9rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 700;
+    white-space: nowrap;
     cursor: pointer;
     background: rgba(0, 0, 0, 0.05);
     color: var(--text-secondary);
@@ -1093,8 +1110,9 @@ select {
     align-items: center;
     justify-content: flex-end;
     gap: 0.6rem;
-    flex-wrap: wrap;
-    width: 100%;
+    flex-wrap: nowrap;
+    flex: 0 1 auto;
+    width: auto;
 }
 
 .search-wrapper {
@@ -1116,7 +1134,8 @@ select {
 }
 
 #search-input {
-    padding: 0.6rem 0.9rem 0.6rem 2.35rem;
+    height: 42px;
+    padding: 0 0.9rem 0 2.35rem;
     font-size: 0.85rem;
     background: rgba(255, 255, 255, 0.75);
     border-width: 1px;
@@ -1128,7 +1147,8 @@ select {
 }
 
 #sort-select {
-    padding: 0.6rem 2.2rem 0.6rem 0.9rem;
+    height: 42px;
+    padding: 0 2.2rem 0 0.9rem;
     font-size: 0.82rem;
     font-weight: 600;
     background: rgba(255, 255, 255, 0.75);
@@ -1818,10 +1838,18 @@ select {
         width: 100%;
     }
 
+    .header-top-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+
     .list-controls {
         flex-direction: column;
         align-items: stretch;
+        justify-content: flex-start;
         width: 100%;
+        flex: 1 1 auto;
         gap: 0.6rem;
     }
 

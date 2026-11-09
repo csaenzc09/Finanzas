@@ -130,6 +130,7 @@
         <!-- Main Content / Lista -->
         <main class="main-content">
             <header class="main-header">
+                <!-- Fila 1: Resumen de Dinero a la izquierda y Acciones (Buscar, Ordenar, Alertas) a la derecha -->
                 <div class="header-top-row">
                     <div class="summary-wrapper">
                         <div class="summary-card">
@@ -142,21 +143,23 @@
                                     </select>
                                 </div>
                             </div>
-                            <h2 class="summary-amount" id="total-amount">$0</h2>
+                            <div class="amount-row">
+                                <h2 class="summary-amount" id="total-amount">$0</h2>
+                                <div class="alerts-summary-badges">
+                                    <div class="alert-pill pill-overdue" id="badge-overdue" style="display: none;">
+                                        <span class="pill-dot"></span>
+                                        <span id="count-overdue">0 Vencidas</span>
+                                    </div>
+                                    <div class="alert-pill pill-urgent" id="badge-urgent" style="display: none;">
+                                        <span class="pill-dot"></span>
+                                        <span id="count-urgent">0 Por vencer (≤3d)</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="summary-submetrics">
                                 <span class="submetric submetric-paid" id="metric-paid-amount">Pagado: $0</span>
                                 <span class="submetric-separator">•</span>
                                 <span class="submetric submetric-total" id="metric-total-amount">Total: $0</span>
-                            </div>
-                        </div>
-                        <div class="alerts-summary-badges">
-                            <div class="alert-pill pill-overdue" id="badge-overdue" style="display: none;">
-                                <span class="pill-dot"></span>
-                                <span id="count-overdue">0 Vencidas</span>
-                            </div>
-                            <div class="alert-pill pill-urgent" id="badge-urgent" style="display: none;">
-                                <span class="pill-dot"></span>
-                                <span id="count-urgent">0 Por vencer (≤3d)</span>
                             </div>
                         </div>
                     </div>
@@ -190,7 +193,7 @@
                     </div>
                 </div>
 
-                <!-- Barra de Filtros dedicada en fila completa inferior -->
+                <!-- Fila 2: Filtros de estado en ancho completo y limpios -->
                 <div class="header-filters-row">
                     <div class="filters">
                         <button class="filter-btn active" data-filter="all">Todas</button>
